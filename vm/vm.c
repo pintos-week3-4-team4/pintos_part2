@@ -123,9 +123,16 @@ static struct frame *
 vm_get_frame (void) {
     struct frame *frame = NULL;
     /* TODO: Fill this function. */
+    void *kva = palloc_get_page(PAL_USER);
 
-	ASSERT (frame != NULL);
-	ASSERT (frame->page == NULL);
+    if (kva == NULL)
+        PANIC("todo");
+
+    frame = malloc(sizeof(struct frame));
+    frame->kva = kva;
+
+    ASSERT(frame != NULL);
+    ASSERT(frame->page == NULL);
     return frame;
 }
 
