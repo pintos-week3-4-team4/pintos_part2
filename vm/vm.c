@@ -185,6 +185,9 @@ vm_do_claim_page (struct page *page) {
 	page->frame = frame;
 
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
+    struct thread *current = thread_current();
+	bool writable = is_writable(current->pml4);
+    pml4_set_page(current->pml4, page->va, frame->kva, writable);
 
 	return swap_in (page, frame->kva);
 }
