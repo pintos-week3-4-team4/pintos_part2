@@ -206,3 +206,20 @@ page_less(const struct hash_elem *a_,
 
     return a->va < b->va;
 }
+
+bool 
+page_insert(struct hash *h, struct page *p) {
+    if(!hash_insert(h, &p->hash_elem))
+		return true;
+	else
+		return false;
+}
+
+bool 
+page_delete(struct hash *h, struct page *p) {
+	if(!hash_delete(h, &p->hash_elem)) {
+		return true;
+	}
+	else
+		return false;
+}
