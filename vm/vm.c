@@ -193,7 +193,7 @@ vm_do_claim_page (struct page *page) {
 /* Initialize new supplemental page table */
 void
 supplemental_page_table_init (struct supplemental_page_table *spt UNUSED) {
-	hash_init(spt, hash_generate, hash_compare, NULL);
+	hash_init(spt, page_hash, page_less, NULL);
 }
 
 /* Copy supplemental page table from src to dst */
@@ -208,3 +208,24 @@ supplemental_page_table_kill (struct supplemental_page_table *spt UNUSED) {
 	/* TODO: Destroy all the supplemental_page_table hold by thread and
 	 * TODO: writeback all the modified contents to the storage. */
 }
+
+
+/* 페이지의 가상 주소를 해싱하는 함수 */
+uint64_t
+page_hash (const struct hash_elem *e, void *aux) {
+	// 1. 해당 hash_elem 요소를 갖고 있는 page를 가져온다.
+	struct page *p = hash_entry(e, struct page, hash_elem);
+	// 2. 페이지의 가상 주소값을 hash_bytes 함수를 이용해 해싱한다.
+	return hash_bytes(p->va, sizeof(p));
+}
+
+/* 페이지의 키 값을 비교 하는 함수 */
+bool
+page_less (const struct hash_elem *a,
+	const struct hash_elem *b,	void *aux) {			
+		// 1. hash_entry로 page 구조체를 가져온다.
+		struct page *p1 = hash_entry(a, struct page, hash_elem);
+		struct page *p2 = hash_entry(b, struct page, hash_elem);
+		// 2. generate_hash 함수로 키를 생성하고 비교한다.
+		return page_hash(p1, NULL) < page_hash(p2, NULL);
+	}
