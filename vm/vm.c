@@ -84,13 +84,18 @@ spt_find_page (struct supplemental_page_table *spt UNUSED, void *va UNUSED) {
 }
 
 /* Insert PAGE into spt with validation. */
+/* 보조 페이지 테이블에 페이지 구조체를 삽입한다. 보조 테이블에서 가상 주소가 존재하지 않는지 검사해야 한다. */
 bool
 spt_insert_page (struct supplemental_page_table *spt UNUSED,
 		struct page *page UNUSED) {
-	int succ = false;
 	/* TODO: Fill this function. */
-
-	return succ;
+	
+	struct page *p = spt_find_page(spt, page->va);
+	if (page != NULL) {
+		return false;
+	}
+	hash_insert(spt, page);
+	return true;
 }
 
 void
