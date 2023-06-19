@@ -27,6 +27,17 @@ hash_generate (const struct hash_elem *e, void *aux) {
 	// 2. 페이지의 가상 주소값을 hash_bytes 함수를 이용해 해싱한다.
 	return hash_bytes(p->va, sizeof(p));
 }
+
+bool
+hash_compare (const struct hash_elem *a,
+		const struct hash_elem *b,	void *aux) {			
+			// 1. hash_entry로 page 구조체를 가져온다.
+			struct page *p1 = hash_entry(a, struct page, hash_elem);
+			struct page *p2 = hash_entry(b, struct page, hash_elem);
+			// 2. generate_hash 함수로 키를 생성하고 비교한다.
+			return hash_generate(p1, NULL) < hash_generate(p2, NULL);
+		}
+
 /* Initializes hash table H to compute hash values using HASH and
    compare hash elements using LESS, given auxiliary data AUX. */
 /* 보조 데이터 AUX를 사용하여 HASH를 사용해 해시 값을 계산하고 LESS를 사용해
