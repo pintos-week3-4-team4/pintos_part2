@@ -119,4 +119,8 @@ uint64_t hash_bytes (const void *, size_t);
 uint64_t hash_string (const char *);
 uint64_t hash_int (int);
 
+/* 페이지의 가상 주소를 해싱하는 함수 */
+uint64_t hash_generate (const struct hash_elem *e, void *aux)
+
+
 #endif /* lib/kernel/hash.h */
