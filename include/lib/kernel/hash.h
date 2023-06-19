@@ -120,11 +120,11 @@ uint64_t hash_string (const char *);
 uint64_t hash_int (int);
 
 /* 페이지의 가상 주소를 해싱하는 함수 */
-uint64_t hash_generate (const struct hash_elem *e, void *aux)
+uint64_t hash_generate (const struct hash_elem *e, void *aux);
 
 /* 페이지의 키 값을 비교 하는 함수 */
 bool hash_compare (const struct hash_elem *a,
 		const struct hash_elem *b,
-		void *aux)
+		void *aux);
 
 #endif /* lib/kernel/hash.h */
