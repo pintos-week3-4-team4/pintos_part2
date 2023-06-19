@@ -2,6 +2,7 @@
 #define VM_VM_H
 #include <stdbool.h>
 #include "threads/palloc.h"
+#include "hash.h"
 
 enum vm_type {
 	/* page not initialized */
@@ -91,25 +92,27 @@ struct page_operations {
  * vm_enry가 존재할 경우: vm_entry에 있는 파일 포인터, 읽기 시작할 오프셋,
  * 읽어야 할 크기 등을 참조해서 물리 페이지를 할당하고 물리 메모리에 로드한 후, 물리 주소와 매핑 */
 struct supplemental_page_table {
-	enum vm_type type; /* 페이지 타입 */
-	void *vaddr; /* 가상 페이지 주소*/
-	bool writable; /* 수정 가능 여부 플래그 */
+	struct hash *pages;
 
-	bool is_loaded; /*물리 메모리 탑재 여부 플래그 */
-	struct *file file; /* 가상 주소와 매핑된 파일 */
+	// enum vm_type type; /* 페이지 타입 */
+	// void *vaddr; /* 가상 페이지 주소*/
+	// bool writable; /* 수정 가능 여부 플래그 */
 
-	/* Memory Mapped File에서 다룰 예정*/
-	struct list_elem mmap_elem; /* mmap 리스트 element*/
+	// bool is_loaded; /*물리 메모리 탑재 여부 플래그 */
+	// struct *file file; /* 가상 주소와 매핑된 파일 */
 
-	size_t offset; /* 읽어야 할 파일 오프셋 */
-	size_t read_bytes; /* 가상 페이지에 쓰여져 있는 데이터 크기 */
-	size_t zero_bytes; /* 0으로 채울 남은 페이지의 바이트 */
+	// /* Memory Mapped File에서 다룰 예정*/
+	// struct list_elem mmap_elem; /* mmap 리스트 element*/
 
-	/* Swapping 과제에서 다룰 예정 */
-	size_t swap_slot; /* 스왑 슬롯 */
+	// size_t offset; /* 읽어야 할 파일 오프셋 */
+	// size_t read_bytes; /* 가상 페이지에 쓰여져 있는 데이터 크기 */
+	// size_t zero_bytes; /* 0으로 채울 남은 페이지의 바이트 */
 
-	/* vm_entry들을 위한 자료구조 부분에서 다룰 예정 */
-	struct hash_elem elem; /* 해시 테이블 element */
+	// /* Swapping 과제에서 다룰 예정 */
+	// size_t swap_slot; /* 스왑 슬롯 */
+
+	// /* vm_entry들을 위한 자료구조 부분에서 다룰 예정 */
+	// struct hash_elem elem; /* 해시 테이블 element */
 };
 
 #include "threads/thread.h"
