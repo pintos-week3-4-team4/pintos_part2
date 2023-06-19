@@ -8,6 +8,7 @@
 #include "hash.h"
 #include "../debug.h"
 #include "threads/malloc.h"
+#include "vm.h"
 
 #define list_elem_to_hash_elem(LIST_ELEM)                       \
 	list_entry(LIST_ELEM, struct hash_elem, list_elem)
@@ -19,6 +20,13 @@ static void insert_elem (struct hash *, struct list *, struct hash_elem *);
 static void remove_elem (struct hash *, struct hash_elem *);
 static void rehash (struct hash *);
 
+uint64_t
+hash_generate (const struct hash_elem *e, void *aux) {
+	// 1. 해당 hash_elem 요소를 갖고 있는 page를 가져온다.
+	struct page *p = hash_entry(e, struct page, hash_elem);
+	// 2. 페이지의 가상 주소값을 hash_bytes 함수를 이용해 해싱한다.
+	return hash_bytes(p->va, sizeof(p));
+}
 /* Initializes hash table H to compute hash values using HASH and
    compare hash elements using LESS, given auxiliary data AUX. */
 /* 보조 데이터 AUX를 사용하여 HASH를 사용해 해시 값을 계산하고 LESS를 사용해
