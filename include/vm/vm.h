@@ -45,6 +45,7 @@ struct page {
 	const struct page_operations *operations;
 	void *va;              /* Address in terms of user space */
 	struct frame *frame;   /* Back reference for frame */
+	struct hash_elem hash_elem; // supplemental_page_table에 정의된 해시 테이블의 요소이다.
 
 	/* Your implementation */
 
