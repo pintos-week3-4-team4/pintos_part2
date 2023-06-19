@@ -62,10 +62,23 @@ err:
 }
 
 /* Find VA from spt and return page. On error, return NULL. */
+/* 보조페이지 테이블에서로부터 가상 주소(va)와 대응되는 페이지 구조체를 찾아서 반환한다. */
 struct page *
 spt_find_page (struct supplemental_page_table *spt UNUSED, void *va UNUSED) {
 	struct page *page = NULL;
 	/* TODO: Fill this function. */
+
+	// 보조 페이지 테이블을 순회한다.
+	struct hash_iterator i;
+	hash_first(&i, spt);
+	while (hash_next(&i)) {
+		struct page *p = hash_entry(hash_cur(&i), struct page, hash_elem);
+		// 매개변수로 주어진 va와 페이지의 va가 같다면 해당 페이지를 리턴한다.
+		if (p->va == va) {
+			page = p;
+			break;
+		}
+	}
 
 	return page;
 }
