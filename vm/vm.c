@@ -1,6 +1,7 @@
 /* vm.c: Generic interface for virtual memory objects. */
-
 #include "threads/malloc.h"
+#include "threads/mmu.h"
+#include "threads/thread.h"
 #include "vm/vm.h"
 #include "vm/inspect.h"
 #include "hash.h"
@@ -184,6 +185,7 @@ vm_claim_page (void *va UNUSED) {
 }
 
 /* Claim the PAGE and set up the mmu. */
+/* 페이지를 요청하고 MMU를 설정합니다. */
 static bool
 vm_do_claim_page (struct page *page) {
 	struct frame *frame = vm_get_frame ();
@@ -193,6 +195,9 @@ vm_do_claim_page (struct page *page) {
 	page->frame = frame;
 
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
+	/* TODO: 페이지의 VA를 프레임의 PA에 매핑하는 페이지 테이블 항목을 삽입하세요. */
+	struct thread *curr_thread = thread_current();
+	pml4_set_page(curr_thread->pml4, page, frame, is_writable(curr_thread->pml4));
 
 	return swap_in (page, frame->kva);
 }
