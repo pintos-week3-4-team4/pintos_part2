@@ -63,7 +63,7 @@ struct page {
 
 /* The representation of "frame" */
 struct frame {
-	void *kva;
+	void *kva; // 커널 가상 주소
 	struct page *page;
 };
 
