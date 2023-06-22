@@ -150,8 +150,8 @@ static struct frame *vm_get_frame (void) {
 	/* TODO: Fill this function. */
 	// 사용자 풀에서 페이지 할당 받기 - 할당 받은 물리 메모리 주소 반환
 	void *addr = palloc_get_page(PAL_USER);
-	if(addr = NULL){
-		PANIC("vm_get_frame()");
+	if(addr == NULL){
+		PANIC("todo");
 	}
 
 	frame = (struct frame *)malloc(sizeof(struct frame));
