@@ -5,10 +5,11 @@
 #include <list.h>
 #include <stdint.h>
 #include "threads/interrupt.h"
-#include "threads/synch.h"
 #ifdef VM
 #include "vm/vm.h"
 #endif
+
+#include "threads/synch.h"
 
 
 /* States in a thread's life cycle. */
@@ -126,6 +127,7 @@ struct thread {
 	struct intr_frame tf;               /* Information for switching */
 	struct intr_frame ptf;
 	unsigned magic;                     /* Detects stack overflow. */
+
 };
 
 /* If false (default), use round-robin scheduler.
