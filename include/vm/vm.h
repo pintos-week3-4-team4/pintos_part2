@@ -93,7 +93,7 @@ struct page_operations {
  * vm_enry가 존재할 경우: vm_entry에 있는 파일 포인터, 읽기 시작할 오프셋,
  * 읽어야 할 크기 등을 참조해서 물리 페이지를 할당하고 물리 메모리에 로드한 후, 물리 주소와 매핑 */
 struct supplemental_page_table {
-	struct hash *pages;
+	struct hash *hash_table;
 
 	// enum vm_type type; /* 페이지 타입 */
 	// void *vaddr; /* 가상 페이지 주소*/
