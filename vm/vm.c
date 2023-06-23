@@ -56,7 +56,6 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 	if (spt_find_page (spt, upage) == NULL) {
 		// 페이지를 생성하고, VM 타입에 따라 적절한 초기화 함수를 가져온다.
 		struct page *page = malloc(sizeof(struct page));
-		page->va = upage;
 
 		bool (*page_initializer)(struct page *, enum vm_type, void *);
 
@@ -72,8 +71,7 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 
 		// 초기화 함수를 인자로 갖는 uninit_new를 호출하여 uninit 페이지 구조체를 생성한다.
 		uninit_new(page, page->va, init, type, aux, page_initializer)
-		
-		// uninit_new를 호출한 후 필드를 수정해야 한다.
+		page->writable = writable;
 
 		// 페이지를 spt에 삽입한다.
 		return spt_insert_page(spt, page);
