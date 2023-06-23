@@ -209,9 +209,9 @@ vm_do_claim_page (struct page *page) {
 	/* TODO: Insert page table entry to map page's VA to frame's PA. */
 	/* TODO: 페이지의 VA를 프레임의 PA에 매핑하는 페이지 테이블 항목을 삽입하세요. */
 	struct thread *curr_thread = thread_current();
-	pml4_set_page(curr_thread->pml4, page, frame, is_writable(curr_thread->pml4));
+	bool result = pml4_set_page(curr_thread->pml4, page, frame, is_writable(curr_thread->pml4));
 
-	return swap_in (page, frame->kva);
+	return result ? swap_in (page, frame->kva) : false
 }
 
 /* Initialize new supplemental page table */
