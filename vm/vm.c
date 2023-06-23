@@ -253,7 +253,7 @@ page_hash (const struct hash_elem *e, void *aux) {
 	// 1. 해당 hash_elem 요소를 갖고 있는 page를 가져온다.
 	struct page *p = hash_entry(e, struct page, hash_elem);
 	// 2. 페이지의 가상 주소값을 hash_bytes 함수를 이용해 해싱한다.
-	return hash_bytes(p->va, sizeof(p));
+	return hash_bytes(&p->va, sizeof(p->va));
 }
 
 /* 페이지의 키 값을 비교 하는 함수 */
