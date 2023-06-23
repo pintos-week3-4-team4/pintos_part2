@@ -675,15 +675,26 @@ thread_sleep (int64_t ticks) {
 	
 	if (cur != idle_thread) {
 		next_awake_tick (cur->wakeup_tick = ticks);
-		list_push_back (&sleep_list, &cur->elem);
-		thread_block ();
-		intr_set_level (old_level);
+		// list_push_back (&sleep_list, &cur->elem);
+		list_insert_ordered(&sleep_list, &cur->elem, compare_thread_ticks, NULL); // sleep_list에 추가
+		thread_block ();	// 현재 스레드 재우고 ready_list의 스레드 실행
+		intr_set_level (old_level);	// 인터럽트 상태를 원래 상태로 변경
 	}
+}
+
+// 두 스레드의 wakeup_ticks를 비교해서 작으면 true를 반환하는 함수
+bool compare_thread_ticks(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED)
+{
+	struct thread *st_a = list_entry(a, struct thread, elem);
+	struct thread *st_b = list_entry(b, struct thread, elem);
+	return st_a->wakeup_tick < st_b->wakeup_tick;
 }
 
 void
 thread_awake (int64_t wakeup_tick) {
-	awake_tick = INT64_MAX;
+	enum intr_level old_level;
+	old_level = intr_disable(); // 인터럽트 비활성
+
 	struct list_elem *e = list_begin (&sleep_list);
 
 	while (e != list_end (&sleep_list)) {
@@ -692,11 +703,13 @@ thread_awake (int64_t wakeup_tick) {
 		if (wakeup_tick >= t->wakeup_tick) {
 			e = list_remove (&t->elem);
 			thread_unblock (t);
+			preemption_priority();
 		} else {
 			e = list_next (e);
 			next_awake_tick (t->wakeup_tick);
 		}
 	}
+	intr_set_level(old_level); // 인터럽트 상태를 원래 상태로 변경
 }
 
 bool
@@ -706,6 +719,11 @@ compare_priority (struct list_elem *a, struct list_elem *b, void *aux UNUSED) {
 
 void
 preemption_priority (void) {
+	if (thread_current() == idle_thread)
+		return;
+	if (list_empty(&ready_list))
+		return;
+	// ready_list에 현재 실행중인 스레드보다 우선순위가 높은 스레드가 있으면,
 	if (!list_empty (&ready_list) && thread_current ()->priority < list_entry (list_front (&ready_list), struct thread, elem)->priority)
 		thread_yield ();
 }

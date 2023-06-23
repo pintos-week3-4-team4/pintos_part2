@@ -173,6 +173,7 @@ void next_awake_tick (int64_t ticks);
 void thread_sleep (int64_t ticks);
 void thread_awake (int64_t ticks);
 
+bool compare_thread_ticks(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED);
 bool compare_priority (struct list_elem *a, struct list_elem *b, void *aux);
 void preemption_priority (void);
 

@@ -202,12 +202,23 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	if (is_kernel_vaddr(vaddr))
         return false;
 
-	page = spt_find_page(spt, vaddr);
-	if(page == NULL)
-		return false;
-
 	// 접근한 메모리의 physical page가 존재하지 않은 경우
 	if (!not_present)
+		return false;
+
+	// todo: 페이지 폴트가 스택 확장에 대한 유효한 경우인지를 확인해야 합니다.
+	void *rsp = f->rsp; // user access인 경우 rsp는 유저 stack을 가리킨다.
+	if (!user)			// kernel access인 경우 thread에서 rsp를 가져와야 한다.
+		rsp = thread_current()->rsp;
+
+	// 스택 확장으로 처리할 수 있는 폴트인 경우, vm_stack_growth를 호출
+	if (USER_STACK - (1 << 20) <= rsp - 8 && rsp - 8 == addr && addr <= USER_STACK)
+		vm_stack_growth(addr);
+	else if (USER_STACK - (1 << 20) <= rsp && rsp <= addr && addr <= USER_STACK)
+		vm_stack_growth(addr);
+
+	page = spt_find_page(spt, vaddr);
+	if(page == NULL)
 		return false;
 
 	// write 불가능한 페이지에 write 요청한 경우
