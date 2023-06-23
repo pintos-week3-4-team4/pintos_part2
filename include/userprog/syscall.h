@@ -8,6 +8,8 @@ struct lock filesys_lock;
 
 void syscall_init (void);
 void check_address (void *addr);
+void *mmap(void *addr, size_t length, int writable, int fd, off_t offset);
+void munmap(void *addr);
 void halt (void);
 void exit (int status);
 tid_t fork(const char *thread_name, struct intr_frame *f);

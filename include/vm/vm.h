@@ -51,6 +51,7 @@ struct page {
 	struct hash_elem hash_elem;
 	bool writable;
 	bool is_loaded;
+	int mapped_page_count; // file_backed_page인 경우, 매핑에 사용한 페이지 개수 (매핑 해제 시 사용)
 
 	// size_t swap_slot;
 	/* Per-type data are binded into the union.
