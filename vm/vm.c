@@ -89,19 +89,12 @@ spt_find_page (struct supplemental_page_table *spt UNUSED, void *va UNUSED) {
 	struct page *page = NULL;
 	/* TODO: Fill this function. */
 
-	// 보조 페이지 테이블을 순회한다.
-	struct hash_iterator i;
-	hash_first(&i, spt);
-	while (hash_next(&i)) {
-		struct page *p = hash_entry(hash_cur(&i), struct page, hash_elem);
-		// 매개변수로 주어진 va와 페이지의 va가 같다면 해당 페이지를 리턴한다.
-		if (p->va == va) {
-			page = p;
-			break;
-		}
-	}
+	page = malloc(sizeof(struct page));
+	page->va = pg_round_down(va);
+	struct hash_elem *e = hash_find(&spt->hash_table, &page->hash_elem);
+	free(page);
 
-	return page;
+	return e == NULL ? NULL : hash_entry(e, struct page, hash_elem);
 }
 
 /* Insert PAGE into spt with validation. */
