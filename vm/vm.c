@@ -264,5 +264,5 @@ page_less (const struct hash_elem *a,
 		struct page *p1 = hash_entry(a, struct page, hash_elem);
 		struct page *p2 = hash_entry(b, struct page, hash_elem);
 		// 2. generate_hash 함수로 키를 생성하고 비교한다.
-		return page_hash(p1, NULL) < page_hash(p2, NULL);
+		return p1->va < p2->va;
 	}
