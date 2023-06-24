@@ -127,9 +127,11 @@ spt_insert_page (struct supplemental_page_table *spt UNUSED,
 void
 spt_remove_page (struct supplemental_page_table *spt, struct page *page) {
 	if(page != NULL){
+		hash_delete(&spt->hash_table, &page->hash_elem);
 		vm_dealloc_page (page);
+		return true;
 	}
-	return;
+	return false;
 }
 
 /* Get the struct frame, that will be evicted. */
@@ -212,9 +214,7 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 		rsp = thread_current()->rsp;
 
 	// 스택 확장으로 처리할 수 있는 폴트인 경우, vm_stack_growth를 호출
-	if (USER_STACK - (1 << 20) <= rsp - 8 && rsp - 8 == addr && addr <= USER_STACK)
-		vm_stack_growth(addr);
-	else if (USER_STACK - (1 << 20) <= rsp && rsp <= addr && addr <= USER_STACK)
+	if ((USER_STACK - (1 << 20) <= rsp - 8 && rsp - 8 == addr && addr <= USER_STACK) || (USER_STACK - (1 << 20) <= rsp && rsp <= addr && addr <= USER_STACK))
 		vm_stack_growth(addr);
 
 	page = spt_find_page(spt, vaddr);

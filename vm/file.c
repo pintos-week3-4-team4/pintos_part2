@@ -58,17 +58,14 @@ file_backed_destroy (struct page *page) {
 	// todo: 관련된 파일을 닫음으로써 file-backed page를 파괴합니다.
 	// todo: 내용이 변경되었다면(dirty) 변경 사항을 파일에 기록해야 합니다.
 
+	// page struct를 해제할 필요는 없습니다. (file_backed_destroy의 호출자가 해야 함)
+	struct file_page *file_page UNUSED = &page->file;
 	if (pml4_is_dirty(thread_current()->pml4, page->va))
 	{
-		file_write_at(page->file.file, page->va, page->file.read_bytes, page->file.offset);
+		file_write_at(file_page->file, page->va, file_page->read_bytes, file_page->offset);
 		pml4_set_dirty(thread_current()->pml4, page->va, 0);
 	}
-	hash_delete(&thread_current()->spt.hash_table, &page->hash_elem);
 	pml4_clear_page(thread_current()->pml4, page->va);
-
-	// page struct를 해제할 필요가 없습니다. (file_backed_destroy의 호출자가 해야 함)
-
-	struct file_page *file_page UNUSED = &page->file;
 }
 
 /* Do the mmap */
@@ -77,15 +74,14 @@ do_mmap (void *addr, size_t length, int writable,
 		struct file *file, off_t offset) {
 	struct file *f = file_reopen(file);
 	void *start_addr = addr; // 매핑 성공 시 파일이 매핑된 가상 주소 반환하는 데 사용
-	int total_page_count = length <= PGSIZE ? 1 : length % PGSIZE ? length / PGSIZE + 1
-																  : length / PGSIZE; // 이 매핑을 위해 사용한 총 페이지 수
+	int total_page_count = length <= PGSIZE ? 1 : length % PGSIZE ? length / PGSIZE + 1 : length / PGSIZE; // 이 매핑을 위해 사용한 총 페이지 수
 
 	size_t read_bytes = file_length(f) < length ? file_length(f) : length;
 	size_t zero_bytes = PGSIZE - read_bytes % PGSIZE;
 
 	ASSERT((read_bytes + zero_bytes) % PGSIZE == 0);
 	ASSERT(pg_ofs(addr) == 0);	 // upage가 페이지 정렬되어 있는지 확인
-	ASSERT(offset % PGSIZE == 0) // ofs가 페이지 정렬되어 있는지 확인;
+	ASSERT(offset % PGSIZE == 0); // ofs가 페이지 정렬되어 있는지 확인
 
 	while (read_bytes > 0 || zero_bytes > 0)
 	{

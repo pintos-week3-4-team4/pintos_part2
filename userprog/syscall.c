@@ -49,10 +49,11 @@ syscall_handler (struct intr_frame *f UNUSED) {
 	// TODO: Your implementation goes here.
 	// printf ("system call!\n");
 	// thread_exit ();
+	int syscall_n = f->R.rax; /* 시스템 콜 넘버 */
 	#ifdef VM
 		thread_current()->rsp = f->rsp;
 	#endif
-	switch (f->R.rax) {
+	switch (syscall_n) {
 		case SYS_HALT:
 			halt ();
 			break;
