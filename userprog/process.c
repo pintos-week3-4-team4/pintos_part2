@@ -654,8 +654,8 @@ lazy_load_segment (struct page *page, void *aux) {
 
 	struct lazy_load_arg *lazy_load_arg = (struct lazy_load_arg *)aux;
 
-	file_seek(lazy_load_arg->f, lazy_load_arg->offset); // 파일 오프셋을 설정
-	if(file_read(lazy_load_arg->f, page->frame->kva, lazy_load_arg->read_bytes) != (int)(lazy_load_arg->read_bytes)) {
+	file_seek(lazy_load_arg->file, lazy_load_arg->ofs); // 파일 오프셋을 설정
+	if(file_read(lazy_load_arg->file, page->frame->kva, lazy_load_arg->read_bytes) != (int)(lazy_load_arg->read_bytes)) {
 		palloc_free_page(page->frame->kva);
 		return false;
 	}
@@ -693,8 +693,8 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 
 		/* TODO: Set up aux to pass information to the lazy_load_segment. */
 		struct lazy_load_arg *lazy_load_arg = malloc(sizeof(struct lazy_load_arg));
-		lazy_load_arg->f = file;
-		lazy_load_arg->offset = ofs;
+		lazy_load_arg->file = file;
+		lazy_load_arg->ofs = ofs;
 		lazy_load_arg->read_bytes = page_read_bytes;
 		lazy_load_arg->zero_bytes = page_zero_bytes;
 
