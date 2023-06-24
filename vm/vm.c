@@ -70,7 +70,7 @@ vm_alloc_page_with_initializer (enum vm_type type, void *upage, bool writable,
 		}
 
 		// 초기화 함수를 인자로 갖는 uninit_new를 호출하여 uninit 페이지 구조체를 생성한다.
-		uninit_new(page, page->va, init, type, aux, page_initializer)
+		uninit_new(page, page->va, init, type, aux, page_initializer);
 		page->writable = writable;
 
 		// 페이지를 spt에 삽입한다.
@@ -214,7 +214,7 @@ vm_do_claim_page (struct page *page) {
 	struct thread *curr_thread = thread_current();
 	bool result = pml4_set_page(curr_thread->pml4, page, frame, is_writable(curr_thread->pml4));
 
-	return result ? swap_in (page, frame->kva) : false
+	return result ? swap_in (page, frame->kva) : false;
 }
 
 /* Initialize new supplemental page table */
