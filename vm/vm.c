@@ -168,6 +168,11 @@ vm_try_handle_fault (struct intr_frame *f UNUSED, void *addr UNUSED,
 	struct page *page = NULL;
 	/* TODO: Validate the fault */
 	/* TODO: Your code goes here */
+	void *vaddr = pg_round_down(addr);
+	page = spt_find_page(spt, vaddr);
+	if(page == NULL){
+		return false;
+	}
 
 	return vm_do_claim_page (page);
 }
