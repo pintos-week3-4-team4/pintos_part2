@@ -37,6 +37,7 @@ file_backed_initializer (struct page *page, enum vm_type type, void *kva) {
 	file_page->file = vme->f;
 	file_page->offset = vme->offset;
 	file_page->read_bytes = vme->read_bytes;
+	return true;
 }
 
 /* Swap in the page by read contents from the file. */
