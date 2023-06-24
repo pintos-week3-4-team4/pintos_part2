@@ -5,10 +5,11 @@
 #include <list.h>
 #include <stdint.h>
 #include "threads/interrupt.h"
-#include "threads/synch.h"
 #ifdef VM
 #include "vm/vm.h"
 #endif
+
+#include "threads/synch.h"
 
 
 /* States in a thread's life cycle. */
@@ -28,6 +29,9 @@ typedef int tid_t;
 #define PRI_MIN 0                       /* Lowest priority. */
 #define PRI_DEFAULT 31                  /* Default priority. */
 #define PRI_MAX 63                      /* Highest priority. */
+
+#define FDT_PAGES 2
+#define FDT_COUNT_LIMIT 128
 
 /* A kernel thread or user process.
  *
@@ -120,12 +124,14 @@ struct thread {
 #ifdef VM
 	/* Table for whole virtual memory owned by thread. */
 	struct supplemental_page_table spt;
+	void *rsp;
 #endif
 
 	/* Owned by thread.c. */
 	struct intr_frame tf;               /* Information for switching */
 	struct intr_frame ptf;
 	unsigned magic;                     /* Detects stack overflow. */
+
 };
 
 /* If false (default), use round-robin scheduler.
@@ -167,6 +173,7 @@ void next_awake_tick (int64_t ticks);
 void thread_sleep (int64_t ticks);
 void thread_awake (int64_t ticks);
 
+bool compare_thread_ticks(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED);
 bool compare_priority (struct list_elem *a, struct list_elem *b, void *aux);
 void preemption_priority (void);
 

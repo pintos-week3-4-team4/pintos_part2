@@ -7,9 +7,12 @@
 struct lock filesys_lock;
 
 void syscall_init (void);
+void check_address (void *addr);
+void *mmap(void *addr, size_t length, int writable, int fd, off_t offset);
+void munmap(void *addr);
 void halt (void);
 void exit (int status);
-int fork (const char *thread_name);
+tid_t fork(const char *thread_name, struct intr_frame *f);
 int exec (const char *file_name);
 int wait (tid_t pid);
 bool create (const char *file, unsigned initial_size);
@@ -21,6 +24,5 @@ int write (int fd, const void *buffer, unsigned size);
 void seek (int fd, unsigned position);
 unsigned tell (int fd);
 void close (int fd);
-void check_address (void *addr);
 
 #endif /* userprog/syscall.h */
