@@ -63,6 +63,7 @@ file_backed_destroy (struct page *page) {
 		file_write_at(page->file.file, page->va, page->file.read_bytes, page->file.offset);
 		pml4_set_dirty(thread_current()->pml4, page->va, 0);
 	}
+	hash_delete(&thread_current()->spt.hash_table, &page->hash_elem);
 	pml4_clear_page(thread_current()->pml4, page->va);
 
 	// page struct를 해제할 필요가 없습니다. (file_backed_destroy의 호출자가 해야 함)
@@ -128,7 +129,7 @@ do_munmap (void *addr) {
 	for (int i = 0; i < count; i++)
 	{
 		if (p)
-			destroy(p);
+			spt_remove_page(spt, p);
 
 		addr += PGSIZE;
 		p = spt_find_page(spt, addr);

@@ -293,7 +293,6 @@ supplemental_page_table_copy (struct supplemental_page_table *dst UNUSED,
 				if(type == VM_UNINIT){
 					// uninit page 생성 & 초기화
 					vm_alloc_page_with_initializer(VM_ANON, va, writable, src_page->uninit.init, src_page->uninit.aux);
-					continue;
 				}
 				/* 2) type이 file이면? */
 				else if(type == VM_FILE){
@@ -311,8 +310,8 @@ supplemental_page_table_copy (struct supplemental_page_table *dst UNUSED,
 					page->frame = src_page->frame;
 					pml4_set_page(thread_current()->pml4, page->va, src_page->frame->kva, src_page->writable);
 				}
+				/* 3) type이 anon이면? */
 				else{
-					/* 2) type이 uninit이 아니면 */
 					// uninit page 생성 & 초기화
 					if(!vm_alloc_page(type, va, writable)){
 						// init이랑 aux는 Lazy Loading에 필요함
