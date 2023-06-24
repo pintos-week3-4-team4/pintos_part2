@@ -16,6 +16,6 @@ struct lazy_load_arg {
     off_t ofs;
     uint32_t read_bytes;
     uint32_t zero_bytes;
-}
+};
 
 #endif /* userprog/process.h */
