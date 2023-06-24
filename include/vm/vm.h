@@ -2,6 +2,7 @@
 #define VM_VM_H
 #include <stdbool.h>
 #include "threads/palloc.h"
+#include "hash.h"
 
 enum vm_type {
 	/* page not initialized */
@@ -44,6 +45,8 @@ struct page {
 	const struct page_operations *operations;
 	void *va;              /* Address in terms of user space */
 	struct frame *frame;   /* Back reference for frame */
+	struct hash_elem hash_elem; // supplemental_page_table에 정의된 해시 테이블의 요소이다.
+	bool writable;
 
 	/* Your implementation */
 
@@ -61,7 +64,7 @@ struct page {
 
 /* The representation of "frame" */
 struct frame {
-	void *kva;
+	void *kva; // 커널 가상 주소
 	struct page *page;
 };
 
@@ -84,7 +87,34 @@ struct page_operations {
 /* Representation of current process's memory space.
  * We don't want to force you to obey any specific design for this struct.
  * All designs up to you for this. */
+/* 페이지의 파일 포인터, 오프셋, 크기를 저장 
+ * 프로그램 탑재 시 가상 주소공간의 각 페이지에 vm_entry를 할당함.
+ * 페이지 폴트 발생 시, 가상 주소에 해당하는 vm_entry를 탐색
+ * vm_entry가 없는 경우: segmentation fault 발생 시키며 종료
+ * vm_enry가 존재할 경우: vm_entry에 있는 파일 포인터, 읽기 시작할 오프셋,
+ * 읽어야 할 크기 등을 참조해서 물리 페이지를 할당하고 물리 메모리에 로드한 후, 물리 주소와 매핑 */
 struct supplemental_page_table {
+	struct hash *hash_table;
+
+	// enum vm_type type; /* 페이지 타입 */
+	// void *vaddr; /* 가상 페이지 주소*/
+	// bool writable; /* 수정 가능 여부 플래그 */
+
+	// bool is_loaded; /*물리 메모리 탑재 여부 플래그 */
+	// struct *file file; /* 가상 주소와 매핑된 파일 */
+
+	// /* Memory Mapped File에서 다룰 예정*/
+	// struct list_elem mmap_elem; /* mmap 리스트 element*/
+
+	// size_t offset; /* 읽어야 할 파일 오프셋 */
+	// size_t read_bytes; /* 가상 페이지에 쓰여져 있는 데이터 크기 */
+	// size_t zero_bytes; /* 0으로 채울 남은 페이지의 바이트 */
+
+	// /* Swapping 과제에서 다룰 예정 */
+	// size_t swap_slot; /* 스왑 슬롯 */
+
+	// /* vm_entry들을 위한 자료구조 부분에서 다룰 예정 */
+	// struct hash_elem elem; /* 해시 테이블 element */
 };
 
 #include "threads/thread.h"
@@ -108,5 +138,10 @@ bool vm_alloc_page_with_initializer (enum vm_type type, void *upage,
 void vm_dealloc_page (struct page *page);
 bool vm_claim_page (void *va);
 enum vm_type page_get_type (struct page *page);
+
+uint64_t page_hash (const struct hash_elem *e, void *aux);
+bool page_less (const struct hash_elem *a,
+		const struct hash_elem *b,
+		void *aux);
 
 #endif  /* VM_VM_H */
